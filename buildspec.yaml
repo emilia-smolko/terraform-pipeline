@@ -13,8 +13,8 @@ phases:
   pre_build:
     ignore-failure: true
     commands:
-      - terraform init
-      - terraform workspace select $TF_ENV
+      - "terraform init"
+      - "terraform workspace select $TF_ENV || terraform workspace new $TF_ENV"
   build:
     commands:
       - terraform $TF_COMMAND -auto-approve -var iamrole=$IAM_ROLE
