@@ -1,0 +1,23 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.7
+    commands:
+      - "cd /usr/bin"
+      - "curl -s -qL -o terra.zip https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
+      - "unzip -o terra.zip"
+      - "ls -al"
+      - "cd ${CODEBUILD_SRC_DIR}"
+  pre_build:
+    commands:
+      - "terraform init"
+      - "terraform validate"
+      - "terraform workspace select $TF_ENV || terraform workspace new $TF_ENV"
+  build:
+    commands:
+      - "terraform destroy -auto-approve ${CODEBUILD_SRC_DIR_lab1plan}/$TF_ENV.plan"
+  post_build:
+    commands:
+      - echo terraform destroy completed
