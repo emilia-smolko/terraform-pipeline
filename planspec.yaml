@@ -1,0 +1,26 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.7
+    commands:
+      - "cd /usr/bin"
+      - "curl -s -qL -o terra.zip https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
+      - "unzip -o terra.zip"
+      - "cd ${CODEBUILD_SRC_DIR}"
+  pre_build:
+    commands:
+      - "terraform init"
+      - "terraform workspace select $TF_ENV || terraform workspace new $TF_ENV"
+      - "terraform validate"
+  build:
+    commands:
+      - "terraform plan -no-color -out=$TF_ENV.plan -var iamrole=$IAM_ROLE >>$TF_ENV.txt"
+  post_build:
+    commands:
+      - echo terraform plan completed
+artifacts:
+  files:
+    - "$TF_ENV.plan"
+    - "$TF_ENV.txt"
