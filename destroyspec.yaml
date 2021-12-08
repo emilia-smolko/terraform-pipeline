@@ -8,7 +8,6 @@ phases:
       - "cd /usr/bin"
       - "curl -s -qL -o terra.zip https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
       - "unzip -o terra.zip"
-      - "ls -al"
       - "cd ${CODEBUILD_SRC_DIR}"
   pre_build:
     commands:
@@ -17,7 +16,7 @@ phases:
       - "terraform workspace select $TF_ENV || terraform workspace new $TF_ENV"
   build:
     commands:
-      - "terraform destroy -auto-approve ${CODEBUILD_SRC_DIR_lab1plan}/$TF_ENV.plan"
+      - "terraform destroy -auto-approve -var iamrole=$IAM_ROLE"
   post_build:
     commands:
       - echo terraform destroy completed
